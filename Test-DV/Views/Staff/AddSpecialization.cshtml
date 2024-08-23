@@ -1,0 +1,83 @@
+﻿@model Test_DV.Models.AddSpecializationViewModel
+
+<h2>Thêm Chuyên ngành</h2>
+
+<form asp-action="AddSpecialization" method="post">
+    <input type="hidden" asp-for="StaffId" />
+
+    <div class="form-group">
+        <label for="facility">Cơ sở</label>
+        <select asp-for="SelectedFacilityId" asp-items="Model.Facilities" class="form-control" id="facility">
+            <option value="">-- Chọn Cơ sở --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="department">Bộ môn</label>
+        <select asp-for="SelectedDepartmentId" asp-items="Model.Departments" class="form-control" id="department">
+            <option value="">-- Chọn Bộ môn --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="major">Chuyên ngành</label>
+        <select asp-for="SelectedMajorId" asp-items="Model.Majors" class="form-control" id="major">
+            <option value="">-- Chọn Chuyên ngành --</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Thêm</button>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var staffId = '@Model.StaffId';
+
+            // Khi thay đổi cơ sở
+            $('#facility').change(function () {
+                var facilityId = $(this).val();
+                if (facilityId) {
+                    $.getJSON('/Staff/GetDepartmentsByFacility', { facilityId: facilityId, staffId: staffId }, function (data) {
+                        var departmentDropdown = $('#department');
+                        departmentDropdown.empty();
+                        departmentDropdown.append('<option value="">-- Chọn Bộ môn --</option>');
+                        $.each(data, function (i, department) {
+                            if (department && department.id && department.name) {
+                                // Kiểm tra xem mục đã tồn tại chưa, nếu chưa thì thêm vào dropdown
+                                if ($("#department option[value='" + department.id + "']").length == 0) {
+                                    departmentDropdown.append('<option value="' + department.id + '">' + department.name + '</option>');
+                                }
+                            } else {
+                                departmentDropdown.append('<option value="undefined">undefined</option>');
+                            }
+                        });
+                    });
+                }
+            });
+
+            // Khi thay đổi bộ môn
+            $('#department').change(function () {
+                var departmentId = $(this).val();
+                if (departmentId) {
+                    $.getJSON('/Staff/GetMajorsByDepartment', { departmentId: departmentId, staffId: staffId }, function (data) {
+                        var majorDropdown = $('#major');
+                        majorDropdown.empty();
+                        majorDropdown.append('<option value="">-- Chọn Chuyên ngành --</option>');
+                        $.each(data, function (i, major) {
+                            if (major && major.id && major.name) {
+                                // Kiểm tra xem mục đã tồn tại chưa, nếu chưa thì thêm vào dropdown
+                                if ($("#major option[value='" + major.id + "']").length == 0) {
+                                    majorDropdown.append('<option value="' + major.id + '">' + major.name + '</option>');
+                                }
+                            } else {
+                                majorDropdown.append('<option value="undefined">undefined</option>');
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+
+}

@@ -1,0 +1,69 @@
+﻿@model Test_DV.Models.StaffSpecializationViewModel
+
+<h2>Quản lý bộ môn / chuyên ngành</h2>
+
+<div>
+    <h4>Thông tin nhân viên</h4>
+    <div>
+        <label>Mã:</label>
+        <input type="text" value="@Model.Staff.StaffCode" readonly />
+        <label>Tên:</label>
+        <input type="text" value="@Model.Staff.Name" readonly />
+        <label>Email FPT:</label>
+        <input type="text" value="@Model.Staff.AccountFpt" readonly />
+        <label>Email FE:</label>
+        <input type="text" value="@Model.Staff.AccountFe" readonly />
+    </div>
+</div>
+
+<p>
+    <a href="@Url.Action("AddSpecialization", "Staff", new { staffId = Model.Staff.Id })" class="btn btn-success">Thêm Chuyên ngành</a>
+</p>
+
+
+
+<div>
+    <h4>Danh sách bộ môn, chuyên ngành theo cơ sở</h4>
+    <!-- Danh sách bộ môn chuyên ngành -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Cơ sở</th>
+                <th>Bộ môn</th>
+                <th>Chuyên ngành</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Staff.StaffMajorFacilities.Any())
+            {
+                var index = 1;
+                foreach (var specialization in Model.Staff.StaffMajorFacilities)
+                {
+                    <tr>
+                        <td>@index</td>
+                        <td>@specialization.MajorFacility.DepartmentFacility.Facility.Name</td>
+                        <td>@specialization.MajorFacility.DepartmentFacility.Department.Name</td>
+                        <td>@specialization.MajorFacility.Major.Name</td>
+                        <td>
+                            <form asp-action="DeleteSpecialization" method="post">
+                                <input type="hidden" name="id" value="@specialization.Id" />
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa chuyên ngành này?');">Xóa</button>
+                            </form>
+                        </td>
+
+
+                    </tr>
+                    index++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5">Nhân viên này không có bộ môn chức vụ</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
